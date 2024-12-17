@@ -77,11 +77,11 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
         // POST: api/Accounts/login
         [HttpPost("login")]
-        public async Task<ActionResult> Login(string email, string password)
+        public async Task<ActionResult> Login(AccountsDTOLogin login)
         {
-            var existingEmail = await _repository.GetAccountsByEmailAsync(email);
+            var existingEmail = await _repository.GetAccountsByEmailAsync(login.Email);
 
-            if (existingEmail == null || existingEmail.Password != password)
+            if (existingEmail == null || existingEmail.Password != login.Password)
             {
                 return NotFound("Invalid email or password.");
             }
