@@ -86,7 +86,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
                 return NotFound("Invalid email or password.");
             }
 
-            return Ok();
+            return Ok(existingEmail.Role);
         }
 
         [HttpPost("register")]
