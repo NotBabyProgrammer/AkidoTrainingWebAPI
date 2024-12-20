@@ -85,8 +85,17 @@ namespace AkidoTrainingWebAPI.API.Controllers
             {
                 return NotFound();
             }
-            await _repository.DeleteAccountAsync(id);
-            return NoContent();
+            var accountToDelete = await _repository.GetAccountsByIdAsync(id);
+            if (accountToDelete.Role != "Head Admin")
+            {
+                await _repository.DeleteAccountAsync(id);
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest("Head Admin can neve be deleted");
+            }
+            
         }
 
         // POST: api/Accounts/login
