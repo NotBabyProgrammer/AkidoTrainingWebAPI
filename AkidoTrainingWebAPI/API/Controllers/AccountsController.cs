@@ -88,6 +88,10 @@ namespace AkidoTrainingWebAPI.API.Controllers
             var accountToDelete = await _repository.GetAccountsByIdAsync(id);
             if (accountToDelete.Role != "Head Admin")
             {
+                if (accountToDelete.ImagePath != "Default.jpg")
+                {
+                    DeleteAvatar(accountToDelete.ImagePath);
+                }
                 await _repository.DeleteAccountAsync(id);
                 return NoContent();
             }
@@ -168,19 +172,19 @@ namespace AkidoTrainingWebAPI.API.Controllers
             {
                 DeleteAvatar(accountToUpdate.ImagePath);
             }
-            accountToUpdate.ImagePath = await WriteFile(avatar, accountToUpdate.Name);
+            accountToUpdate.ImagePath = await WriteFile(avatar, accountToUpdate.Email);
             await _repository.UpdateUserAsync(accountToUpdate);
 
             return Ok(accountToUpdate.ImagePath);
         }
 
-        private async Task<string> WriteFile(IFormFile image, string userName)
+        private async Task<string> WriteFile(IFormFile image, string email)
         {
             string filename = "";
             try
             {
                 var extension = "." + image.FileName.Split('.')[image.FileName.Split('.').Length - 1];
-                filename = userName + extension;
+                filename = email + extension;
 
                 var filepath = Path.Combine(Directory.GetCurrentDirectory(), $"API\\Avatar");
 
