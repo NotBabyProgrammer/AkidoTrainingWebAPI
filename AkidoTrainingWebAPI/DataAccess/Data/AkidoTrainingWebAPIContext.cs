@@ -23,10 +23,13 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
                 new Accounts
                 {
                     Id = 1,
-                    Name = "Admin",
-                    Email = "admin@example.com",
-                    Password = "AdminPassword123", // Consider hashing in a real app
-                    Role = "Admin"
+                    Name = "Head Admin",
+                    Email = "getheaded@example.com",
+                    Password = "Password123", // Consider hashing in a real app
+                    Role = "Head Admin",
+                    Belt = "Black",
+                    Level = 1,
+                    ImagePath = "Default.jpg"
                 },
                 new Accounts
                 {
@@ -34,7 +37,10 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
                     Name = "User1",
                     Email = "user1@example.com",
                     Password = "User1Password123",
-                    Role = "User"
+                    Role = "Admin",
+                    Belt = "Black",
+                    Level = 2,
+                    ImagePath = "Default.jpg"
                 },
                 new Accounts
                 {
@@ -42,9 +48,30 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
                     Name = "User2",
                     Email = "user2@example.com",
                     Password = "User2Password123",
-                    Role = "User"
+                    Role = "User",
+                    Belt = "Black",
+                    Level = 2,
+                    ImagePath = "Default.jpg"
                 }
             );
+
+            modelBuilder.Entity<Roles>().HasData(
+                new Roles
+                {
+                    RolesId = 1,
+                    RoleName = "Head Admin"
+                },
+                new Roles
+                {
+                    RolesId = 2,
+                    RoleName = "Admin"
+                },
+                new Roles
+                {
+                    RolesId = 3,
+                    RoleName = "User"
+                }
+                );
         }
 
         public DbSet<Accounts> Accounts { get; set; } = default!;
