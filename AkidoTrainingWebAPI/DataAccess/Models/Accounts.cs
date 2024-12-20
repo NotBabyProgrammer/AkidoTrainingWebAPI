@@ -14,5 +14,8 @@ namespace AkidoTrainingWebAPI.DataAccess.Models
         public string? Password { get; set; }
         [Required]
         public string? Role { get; set; }
+        public string? Belt {  get; set; }
+        public string? ImagePath {  get; set; }
+        public int? Level { get; set; }
     }
 }

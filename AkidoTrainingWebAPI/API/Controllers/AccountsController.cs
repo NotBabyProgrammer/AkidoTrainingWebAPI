@@ -29,7 +29,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             return Ok(accounts);
         }
 
-        // GET: api/Accounts/ViewAccounts/5
+        // GET: api/Accounts/ViewAccount/5
         [HttpGet("ViewAccounts/{id}")]
         public async Task<ActionResult> GetAccounts(int id)
         {
@@ -43,24 +43,38 @@ namespace AkidoTrainingWebAPI.API.Controllers
             return Ok(accounts);
         }
 
-        // PUT: api/Accounts/5
+        // PUT: api/Accounts/Update/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccounts(int id, AccountsDTOPut accounts)
+        [HttpPut("Update/{id}")]
+        public async Task<IActionResult> UpdateAccount(int id, AccountsDTOPut accounts)
         {
             var accountToUpdate = await _repository.GetAccountsByIdAsync(id);
             if (accountToUpdate == null)
             {
                 return NotFound();
             }
-            
-            accountToUpdate.Email = accounts.Email;
-            accountToUpdate.Role = accounts.Role;
-            accountToUpdate.Name = accounts.Name;
-            accountToUpdate.Password = accounts.Password;
 
-            await _repository.UpdateUserAsync(accountToUpdate);
-            return NoContent();
+            if (await _repository.IsEmailExistsAsync(accounts.Email))
+            {
+                return Conflict("This email is already used for other accounts");
+            }
+
+            if (accounts.Role.ToString() == "Admin" || accounts.Role.ToString() == "User" || accounts.Role.ToString() == "Head Admin")
+            {
+                accountToUpdate.Email = accounts.Email;
+                accountToUpdate.Role = accounts.Role;
+                accountToUpdate.Name = accounts.Name;
+                accountToUpdate.Password = accounts.Password;
+                accountToUpdate.Level = accounts.Level;
+                accountToUpdate.Belt = accounts.Belt;
+
+                await _repository.UpdateUserAsync(accountToUpdate);
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest("Must be Admin or User");
+            }
         }
 
         // DELETE: api/Accounts/5
@@ -76,7 +90,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
         }
 
         // POST: api/Accounts/login
-        [HttpPost("login")]
+        [HttpPost("Login")]
         public async Task<ActionResult> Login(AccountsDTOLogin login)
         {
             var existingEmail = await _repository.GetAccountsByEmailAsync(login.Email);
@@ -89,7 +103,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             return Ok(existingEmail.Role);
         }
 
-        [HttpPost("register")]
+        [HttpPost("Register")]
         public async Task<ActionResult> Register(AccountsDTORegister account)
         {
             if (await _repository.IsEmailExistsAsync(account.Email))
@@ -101,10 +115,94 @@ namespace AkidoTrainingWebAPI.API.Controllers
                 Name = account.Name,
                 Password = account.Password,
                 Email = account.Email,
-                Role = "User"
+                Role = "User",
+                Level = 5,
+                Belt = "Black",
+                ImagePath = "Default.jpg"
             };
             await _repository.AddAccountsAsync(newAccount);
             return CreatedAtAction(nameof(GetAccounts), new { id = newAccount.Id}, newAccount);
+        }
+
+        [HttpGet("Image/{id}")]
+        public async Task<IActionResult> GetImage(int id)
+        {
+            var account = await _repository.GetAccountsByIdAsync(id);
+
+            // Directory where uploaded images are stored
+            var uploadsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "API", "Avatar");
+
+            // Full path to the requested image
+            var imagePath = Path.Combine(uploadsDirectory, account.ImagePath);
+
+            if (!System.IO.File.Exists(imagePath))
+            {
+                return NotFound("Image not found.");
+            }
+
+            // Return the image file
+            var imageFileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+            return File(imageFileStream, "image/jpeg"); // Adjust the content type as needed
+        }
+
+        [HttpPut("UploadImages/{id}")]
+        public async Task<IActionResult> EditProfilePicture(int id, IFormFile avatar)
+        {
+            var accountToUpdate = await _repository.GetAccountsByIdAsync(id);
+
+            if (accountToUpdate == null)
+            {
+                return NotFound("User not found");
+            }
+
+            if (accountToUpdate.ImagePath != "Default.jpg")
+            {
+                DeleteAvatar(accountToUpdate.ImagePath);
+            }
+            accountToUpdate.ImagePath = await WriteFile(avatar, accountToUpdate.Name);
+            await _repository.UpdateUserAsync(accountToUpdate);
+
+            return Ok(accountToUpdate.ImagePath);
+        }
+
+        private async Task<string> WriteFile(IFormFile image, string userName)
+        {
+            string filename = "";
+            try
+            {
+                var extension = "." + image.FileName.Split('.')[image.FileName.Split('.').Length - 1];
+                filename = userName + extension;
+
+                var filepath = Path.Combine(Directory.GetCurrentDirectory(), $"API\\Avatar");
+
+                if (!Directory.Exists(filepath))
+                {
+                    Directory.CreateDirectory(filepath);
+                }
+
+                var exactpath = Path.Combine(Directory.GetCurrentDirectory(), $"API\\Avatar", filename);
+                using (var stream = new FileStream(exactpath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return filename;
+        }
+
+        private void DeleteAvatar(string avatarPath)
+        {
+            var deleteFile = Path.Combine(Directory.GetCurrentDirectory(), $"API\\Avatar\\", avatarPath);
+            if (System.IO.File.Exists(deleteFile))
+            {
+                System.IO.File.Delete(deleteFile);
+            }
+            else
+            {
+                throw new Exception("File not found");
+            }
         }
     }
 }

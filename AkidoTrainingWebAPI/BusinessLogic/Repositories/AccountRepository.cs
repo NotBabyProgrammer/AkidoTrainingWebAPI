@@ -3,6 +3,10 @@ using AkidoTrainingWebAPI.DataAccess.Data;
 using AkidoTrainingWebAPI.DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MailKit.Security;
+using MimeKit.Text;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace AkidoTrainingWebAPI.BusinessLogic.Repositories
 {
@@ -42,7 +46,10 @@ namespace AkidoTrainingWebAPI.BusinessLogic.Repositories
                 Name = account.Name,
                 Password = account.Password,
                 Email = account.Email,
-                Role = account.Role
+                Role = account.Role,
+                Level = account.Level,
+                Belt = account.Belt,
+                ImagePath = account.ImagePath
             };
             _context.Accounts.Add(newAccount);
             await _context.SaveChangesAsync();
@@ -67,6 +74,29 @@ namespace AkidoTrainingWebAPI.BusinessLogic.Repositories
         public bool IsAccountExisting(int id)
         {
             return _context.Accounts.Any(a => a.Id == id);
+        }
+
+        public void SendEmail(string receiveEmail, string subject, string body, bool htmlBody = false)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse("conglinhoct2003@gmail.com"));
+            email.To.Add(MailboxAddress.Parse(receiveEmail));
+            email.Subject = subject;
+
+            if (htmlBody)
+            {
+                email.Body = new TextPart(TextFormat.Html) { Text = body };
+            }
+            else
+            {
+                email.Body = new TextPart(TextFormat.Plain) { Text = body };
+            }
+
+            using var smtp = new SmtpClient();
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate("conglinhoct2003@gmail.com", "adcyvzgxcdyzcrwc");
+            smtp.Send(email);
+            smtp.Disconnect(true);
         }
     }
 }
