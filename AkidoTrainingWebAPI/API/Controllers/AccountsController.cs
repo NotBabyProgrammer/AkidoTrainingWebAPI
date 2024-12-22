@@ -141,21 +141,32 @@ namespace AkidoTrainingWebAPI.API.Controllers
         public async Task<IActionResult> GetImage(int id)
         {
             var account = await _repository.GetAccountsByIdAsync(id);
+            if (account == null || string.IsNullOrEmpty(account.ImagePath))
+            {
+                return NotFound("User or image not found.");
+            }
 
-            // Directory where uploaded images are stored
             var uploadsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "API", "Avatar");
-
-            // Full path to the requested image
             var imagePath = Path.Combine(uploadsDirectory, account.ImagePath);
 
             if (!System.IO.File.Exists(imagePath))
             {
                 return NotFound("Image not found.");
             }
-
-            // Return the image file
-            var imageFileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
-            return File(imageFileStream, "image/jpeg"); // Adjust the content type as needed
+            try
+            {
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                return File(memory, "image/jpeg");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error retrieving image: {ex.Message}");
+            }
         }
 
         [HttpPut("UploadImages/{id}")]
@@ -183,17 +194,17 @@ namespace AkidoTrainingWebAPI.API.Controllers
             string filename = "";
             try
             {
-                var extension = "." + image.FileName.Split('.')[image.FileName.Split('.').Length - 1];
+                var extension = Path.GetExtension(image.FileName);
                 filename = email + extension;
 
-                var filepath = Path.Combine(Directory.GetCurrentDirectory(), $"API\\Avatar");
-
+                var filepath = Path.Combine(Directory.GetCurrentDirectory(), "API", "Avatar");
                 if (!Directory.Exists(filepath))
                 {
                     Directory.CreateDirectory(filepath);
                 }
 
-                var exactpath = Path.Combine(Directory.GetCurrentDirectory(), $"API\\Avatar", filename);
+                var exactpath = Path.Combine(filepath, filename);
+
                 using (var stream = new FileStream(exactpath, FileMode.Create))
                 {
                     await image.CopyToAsync(stream);
@@ -201,21 +212,26 @@ namespace AkidoTrainingWebAPI.API.Controllers
             }
             catch (Exception ex)
             {
+                throw new Exception($"Error writing file: {ex.Message}");
             }
             return filename;
         }
 
         private void DeleteAvatar(string avatarPath)
         {
-            var deleteFile = Path.Combine(Directory.GetCurrentDirectory(), $"API\\Avatar\\", avatarPath);
-            if (System.IO.File.Exists(deleteFile))
+            try
             {
-                System.IO.File.Delete(deleteFile);
+                var deleteFile = Path.Combine(Directory.GetCurrentDirectory(), "API", "Avatar", avatarPath);
+                if (System.IO.File.Exists(deleteFile))
+                {
+                    System.IO.File.Delete(deleteFile);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                throw new Exception("File not found");
+                throw new Exception($"Error deleting avatar: {ex.Message}");
             }
         }
+
     }
 }
