@@ -1,4 +1,4 @@
-﻿namespace AkidoTrainingWebAPI.BusinessLogic.DTOs
+﻿namespace AkidoTrainingWebAPI.BusinessLogic.DTOs.AccountsDTO
 {
     public class AccountsDTOPutImage
     {

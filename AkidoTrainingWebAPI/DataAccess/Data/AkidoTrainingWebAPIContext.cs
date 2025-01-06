@@ -23,35 +23,35 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
                 new Accounts
                 {
                     Id = 1,
-                    Name = "Head Admin",
-                    Email = "getheaded@example.com",
-                    Password = "Password123", // Consider hashing in a real app
-                    Role = "Head Admin",
+                    Name = "Admin",
+                    PhoneNumber = 11111,
+                    Password = "Password123",
+                    Role = "Admin",
                     Belt = "Black",
                     Level = 1,
-                    ImagePath = "Default.jpg"
+                    ImagePath = "Default.png"
                 },
                 new Accounts
                 {
                     Id = 2,
                     Name = "User1",
-                    Email = "user1@example.com",
-                    Password = "User1Password123",
-                    Role = "Admin",
+                    PhoneNumber = 11111,
+                    Password = "Password123",
+                    Role = "User",
                     Belt = "Black",
                     Level = 2,
-                    ImagePath = "Default.jpg"
+                    ImagePath = "Default.png"
                 },
                 new Accounts
                 {
                     Id = 3,
                     Name = "User2",
-                    Email = "user2@example.com",
-                    Password = "User2Password123",
+                    PhoneNumber = 11111,
+                    Password = "Password123",
                     Role = "User",
                     Belt = "Black",
                     Level = 2,
-                    ImagePath = "Default.jpg"
+                    ImagePath = "Default.png"
                 }
             );
 
@@ -59,21 +59,19 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
                 new Roles
                 {
                     RolesId = 1,
-                    RoleName = "Head Admin"
-                },
-                new Roles
-                {
-                    RolesId = 2,
                     RoleName = "Admin"
                 },
                 new Roles
                 {
-                    RolesId = 3,
+                    RolesId = 2,
                     RoleName = "User"
                 }
                 );
         }
 
         public DbSet<Accounts> Accounts { get; set; } = default!;
+        public DbSet<Roles> Roles { get; set; } = default!;
+        public DbSet<AkidoTrainingWebAPI.DataAccess.Models.Posts> Posts { get; set; } = default!;
+        public DbSet<AkidoTrainingWebAPI.DataAccess.Models.Contents> Contents { get; set; } = default!;
     }
 }

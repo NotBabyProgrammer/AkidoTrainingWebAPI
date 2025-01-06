@@ -17,7 +17,7 @@ namespace AkidoTrainingWebAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -31,10 +31,6 @@ namespace AkidoTrainingWebAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Belt")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImagePath")
@@ -51,6 +47,9 @@ namespace AkidoTrainingWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PhoneNumber")
+                        .HasColumnType("int");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -64,35 +63,79 @@ namespace AkidoTrainingWebAPI.Migrations
                         {
                             Id = 1,
                             Belt = "Black",
-                            Email = "getheaded@example.com",
                             ImagePath = "Default.jpg",
                             Level = 1,
-                            Name = "Head Admin",
+                            Name = "Admin",
                             Password = "Password123",
-                            Role = "Head Admin"
+                            PhoneNumber = 11111,
+                            Role = "Admin"
                         },
                         new
                         {
                             Id = 2,
                             Belt = "Black",
-                            Email = "user1@example.com",
                             ImagePath = "Default.jpg",
                             Level = 2,
                             Name = "User1",
-                            Password = "User1Password123",
-                            Role = "Admin"
+                            Password = "Password123",
+                            PhoneNumber = 11111,
+                            Role = "User"
                         },
                         new
                         {
                             Id = 3,
                             Belt = "Black",
-                            Email = "user2@example.com",
                             ImagePath = "Default.jpg",
                             Level = 2,
                             Name = "User2",
-                            Password = "User2Password123",
+                            Password = "Password123",
+                            PhoneNumber = 11111,
                             Role = "User"
                         });
+                });
+
+            modelBuilder.Entity("AkidoTrainingWebAPI.DataAccess.Models.Contents", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Contents");
+                });
+
+            modelBuilder.Entity("AkidoTrainingWebAPI.DataAccess.Models.Posts", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Writer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("AkidoTrainingWebAPI.DataAccess.Models.Roles", b =>
@@ -118,16 +161,11 @@ namespace AkidoTrainingWebAPI.Migrations
                         new
                         {
                             RolesId = 1,
-                            RoleName = "Head Admin"
-                        },
-                        new
-                        {
-                            RolesId = 2,
                             RoleName = "Admin"
                         },
                         new
                         {
-                            RolesId = 3,
+                            RolesId = 2,
                             RoleName = "User"
                         });
                 });

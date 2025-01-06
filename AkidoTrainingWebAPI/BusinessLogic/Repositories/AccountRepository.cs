@@ -1,5 +1,4 @@
-﻿using AkidoTrainingWebAPI.BusinessLogic.DTOs;
-using AkidoTrainingWebAPI.DataAccess.Data;
+﻿using AkidoTrainingWebAPI.DataAccess.Data;
 using AkidoTrainingWebAPI.DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +6,7 @@ using MailKit.Security;
 using MimeKit.Text;
 using MimeKit;
 using MailKit.Net.Smtp;
+using AkidoTrainingWebAPI.BusinessLogic.DTOs.AccountsDTO;
 
 namespace AkidoTrainingWebAPI.BusinessLogic.Repositories
 {
@@ -28,14 +28,14 @@ namespace AkidoTrainingWebAPI.BusinessLogic.Repositories
             return await _context.Accounts.FindAsync(id);
         }
 
-        public async Task<Accounts> GetAccountsByEmailAsync(string email)
+        public async Task<Accounts> GetAccountsByPhoneAsync(int phone)
         {
-            return await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
+            return await _context.Accounts.FirstOrDefaultAsync(a => a.PhoneNumber == phone);
         }
 
-        public async Task<bool> IsEmailExistsAsync(string email)
+        public async Task<bool> IsPhoneExistsAsync(int phone)
         {
-            return await _context.Accounts.AnyAsync(a => a.Email == email);
+            return await _context.Accounts.AnyAsync(a => a.PhoneNumber == phone);
         }
 
         public async Task AddAccountsAsync(AccountsDTO account)
@@ -45,7 +45,7 @@ namespace AkidoTrainingWebAPI.BusinessLogic.Repositories
                 Id = account.Id,
                 Name = account.Name,
                 Password = account.Password,
-                Email = account.Email,
+                PhoneNumber = account.PhoneNumber,
                 Role = account.Role,
                 Level = account.Level,
                 Belt = account.Belt,

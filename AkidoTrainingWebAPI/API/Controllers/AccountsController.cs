@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Core.Types;
 using AkidoTrainingWebAPI.BusinessLogic.Repositories;
-using AkidoTrainingWebAPI.BusinessLogic.DTOs;
+using AkidoTrainingWebAPI.BusinessLogic.DTOs.AccountsDTO;
 
 namespace AkidoTrainingWebAPI.API.Controllers
 {
@@ -54,14 +54,14 @@ namespace AkidoTrainingWebAPI.API.Controllers
                 return NotFound();
             }
 
-            if (await _repository.IsEmailExistsAsync(accounts.Email))
+            if (await _repository.IsPhoneExistsAsync(accounts.PhoneNumber) && accountToUpdate.PhoneNumber != accounts.PhoneNumber)
             {
                 return Conflict("This email is already used for other accounts");
             }
 
-            if (accounts.Role.ToString() == "Admin" || accounts.Role.ToString() == "User" || accounts.Role.ToString() == "Head Admin")
+            if (accounts.Role.ToString() == "Admin" || accounts.Role.ToString() == "User")
             {
-                accountToUpdate.Email = accounts.Email;
+                accountToUpdate.PhoneNumber = accounts.PhoneNumber;
                 accountToUpdate.Role = accounts.Role;
                 accountToUpdate.Name = accounts.Name;
                 accountToUpdate.Password = accounts.Password;
@@ -88,7 +88,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             var accountToDelete = await _repository.GetAccountsByIdAsync(id);
             if (accountToDelete.Role != "Head Admin")
             {
-                if (accountToDelete.ImagePath != "Default.jpg")
+                if (accountToDelete.ImagePath != "Default.png")
                 {
                     DeleteAvatar(accountToDelete.ImagePath);
                 }
@@ -97,7 +97,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             }
             else
             {
-                return BadRequest("Head Admin can neve be deleted");
+                return BadRequest("Head Admin can never be deleted");
             }
             
         }
@@ -106,20 +106,20 @@ namespace AkidoTrainingWebAPI.API.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult> Login(AccountsDTOLogin login)
         {
-            var existingEmail = await _repository.GetAccountsByEmailAsync(login.Email);
+            var existingPhoneNumber = await _repository.GetAccountsByPhoneAsync(login.PhoneNumber);
 
-            if (existingEmail == null || existingEmail.Password != login.Password)
+            if (existingPhoneNumber == null || existingPhoneNumber.Password != login.Password)
             {
                 return NotFound("Invalid email or password.");
             }
 
-            return Ok(existingEmail.Role);
+            return Ok(existingPhoneNumber.Role);
         }
 
         [HttpPost("Register")]
         public async Task<ActionResult> Register(AccountsDTORegister account)
         {
-            if (await _repository.IsEmailExistsAsync(account.Email))
+            if (await _repository.IsPhoneExistsAsync(account.PhoneNumber))
             {
                 return Conflict("This email is already used for other accounts");
             }
@@ -127,11 +127,11 @@ namespace AkidoTrainingWebAPI.API.Controllers
             {
                 Name = account.Name,
                 Password = account.Password,
-                Email = account.Email,
+                PhoneNumber = account.PhoneNumber,
                 Role = "User",
                 Level = 5,
                 Belt = "Black",
-                ImagePath = "Default.jpg"
+                ImagePath = "Default.png"
             };
             await _repository.AddAccountsAsync(newAccount);
             return CreatedAtAction(nameof(GetAccounts), new { id = newAccount.Id}, newAccount);
@@ -179,23 +179,23 @@ namespace AkidoTrainingWebAPI.API.Controllers
                 return NotFound("User not found");
             }
 
-            if (accountToUpdate.ImagePath != "Default.jpg")
+            if (accountToUpdate.ImagePath != "Default.png")
             {
                 DeleteAvatar(accountToUpdate.ImagePath);
             }
-            accountToUpdate.ImagePath = await WriteFile(avatar, accountToUpdate.Email);
+            accountToUpdate.ImagePath = await WriteFile(avatar, accountToUpdate.PhoneNumber);
             await _repository.UpdateUserAsync(accountToUpdate);
 
             return Ok(accountToUpdate.ImagePath);
         }
 
-        private async Task<string> WriteFile(IFormFile image, string email)
+        private async Task<string> WriteFile(IFormFile image, int phone)
         {
             string filename = "";
             try
             {
                 var extension = Path.GetExtension(image.FileName);
-                filename = email + extension;
+                filename = phone + extension;
 
                 var filepath = Path.Combine(Directory.GetCurrentDirectory(), "API", "Avatar");
                 if (!Directory.Exists(filepath))
