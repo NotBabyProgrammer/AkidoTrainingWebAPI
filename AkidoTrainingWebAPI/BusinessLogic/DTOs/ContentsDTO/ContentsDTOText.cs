@@ -3,6 +3,6 @@
     public class ContentsDTOText
     {
         public int PostId { get; set; }
-        public string? Text { get; set; }
+        public string? Content { get; set; }
     }
 }
