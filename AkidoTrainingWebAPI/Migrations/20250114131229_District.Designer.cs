@@ -4,6 +4,7 @@ using AkidoTrainingWebAPI.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AkidoTrainingWebAPI.Migrations
 {
     [DbContext(typeof(AkidoTrainingWebAPIContext))]
-    partial class AkidoTrainingWebAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20250114131229_District")]
+    partial class District
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,34 +95,6 @@ namespace AkidoTrainingWebAPI.Migrations
                             PhoneNumber = 11111,
                             Role = "User"
                         });
-                });
-
-            modelBuilder.Entity("AkidoTrainingWebAPI.DataAccess.Models.Areas", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("District")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Schedule")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Areas");
                 });
 
             modelBuilder.Entity("AkidoTrainingWebAPI.DataAccess.Models.Contents", b =>

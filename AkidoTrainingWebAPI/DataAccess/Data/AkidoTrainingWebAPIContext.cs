@@ -73,5 +73,7 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
         public DbSet<Roles> Roles { get; set; } = default!;
         public DbSet<AkidoTrainingWebAPI.DataAccess.Models.Posts> Posts { get; set; } = default!;
         public DbSet<AkidoTrainingWebAPI.DataAccess.Models.Contents> Contents { get; set; } = default!;
+        public DbSet<AkidoTrainingWebAPI.DataAccess.Models.Districts> Districts { get; set; } = default!;
+        public DbSet<AkidoTrainingWebAPI.DataAccess.Models.Areas> Areas { get; set; } = default!;
     }
 }

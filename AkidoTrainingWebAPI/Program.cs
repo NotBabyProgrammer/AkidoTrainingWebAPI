@@ -25,6 +25,7 @@ builder.Services.AddCors(options => {
 });
 
 builder.Services.AddScoped<AccountRepository>();
+builder.Services.AddScoped<AreasRepository>();
 
 var app = builder.Build();
 

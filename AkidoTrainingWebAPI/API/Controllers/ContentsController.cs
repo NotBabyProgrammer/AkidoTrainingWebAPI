@@ -269,7 +269,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             });
         }
 
-        //POST: api/Contents/UpdateImage
+        //PUT: api/Contents/UpdateImage
         [HttpPut("UpdateImage/{contentId}")]
         public async Task<IActionResult> UpdateImage(int contentId, IFormFile newImage)
         {
@@ -326,8 +326,8 @@ namespace AkidoTrainingWebAPI.API.Controllers
             });
         }
 
-        //POST: api/Contents/UpdateVideo
-        [HttpPost("UpdateVideo")]
+        //PUT: api/Contents/UpdateVideo
+        [HttpPut("UpdateVideo")]
         public async Task<IActionResult> UpdateVideo(int contentId, IFormFile video)
         {
             // Validate video file
