@@ -113,7 +113,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             {
                 return NotFound();
             }
-
+            DeleteAvatar(areas.ImagePath, areas.District);
             _context.Areas.Remove(areas);
             await _context.SaveChangesAsync();
 
