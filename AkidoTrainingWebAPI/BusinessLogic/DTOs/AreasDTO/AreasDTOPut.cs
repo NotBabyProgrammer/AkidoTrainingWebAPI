@@ -1,6 +1,6 @@
 ﻿namespace AkidoTrainingWebAPI.BusinessLogic.DTOs.AreasDTO
 {
-    public class AreasDTOAdd
+    public class AreasDTOPut
     {
         public string? District { get; set; }
         public string? Name { get; set; }

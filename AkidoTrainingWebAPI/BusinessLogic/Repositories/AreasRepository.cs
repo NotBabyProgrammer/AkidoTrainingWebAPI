@@ -21,6 +21,7 @@ namespace AkidoTrainingWebAPI.BusinessLogic.Repositories
                 District = area.District,
                 Schedule = area.Schedule,
                 Address = area.Address,
+                Description = area.Description,
                 ImagePath = area.ImagePath
             };
             _context.Areas.Add(newArea);

@@ -51,14 +51,20 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
         // PUT: api/Areas/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAreas(int id, Areas areas)
+        public async Task<IActionResult> PutAreas(int id, AreasDTOPut area)
         {
-            if (id != areas.Id)
+            var areaToUpdate = await _context.Areas.FindAsync(id);
+            if (areaToUpdate == null)
             {
                 return BadRequest();
             }
+            
+            areaToUpdate.Name = area.Name;
+            areaToUpdate.Description = area.Description;
+            areaToUpdate.Address = area.Address;
+            areaToUpdate.District = area.District;
 
-            _context.Entry(areas).State = EntityState.Modified;
+            _context.Entry(areaToUpdate).State = EntityState.Modified;
 
             try
             {
@@ -81,14 +87,14 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
         // POST: api/Areas
         [HttpPost]
-        public async Task<ActionResult<Areas>> PostAreas([FromForm] AreasDTOAdd areas, IFormFile image, [FromForm] List<DateTime>? schedule)
+        public async Task<ActionResult<Areas>> PostAreas([FromForm] AreasDTOAdd areas, IFormFile image)
         {
             var newArea = new AreasDTO
             {
                 Name = areas.Name,
                 District = areas.District,
                 Address = areas.Address,
-                Schedule = schedule
+                Description = areas.Description,
             };
 
             newArea.ImagePath = await WriteFile(image, areas.Name, areas.District);

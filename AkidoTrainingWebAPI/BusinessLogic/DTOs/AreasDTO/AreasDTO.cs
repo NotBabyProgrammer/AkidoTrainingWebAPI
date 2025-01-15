@@ -10,6 +10,7 @@ namespace AkidoTrainingWebAPI.BusinessLogic.DTOs.AreasDTO
         public string? Name { get; set; }
         public string? Address { get; set; }
         public List<DateTime>? Schedule { get; set; }
+        public string? Description { get; set; }
         public string? ImagePath { get; set; }
     }
 }

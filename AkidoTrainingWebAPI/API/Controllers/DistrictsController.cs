@@ -47,13 +47,14 @@ namespace AkidoTrainingWebAPI.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDistricts(int id,DistrictsDTO districts)
         {
-            var districtsToUpdate = await _context.Accounts.FindAsync(id);
+            var districtsToUpdate = await _context.Districts.FindAsync(id);
             if (districtsToUpdate == null)
             {
                 return BadRequest();
             }
+            districtsToUpdate.Name = districts.Name;
 
-            _context.Entry(districts).State = EntityState.Modified;
+            _context.Entry(districtsToUpdate).State = EntityState.Modified;
 
             try
             {
