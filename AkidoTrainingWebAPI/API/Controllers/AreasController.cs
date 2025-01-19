@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AkidoTrainingWebAPI.BusinessLogic.DTOs.AreasDTO;
 using AkidoTrainingWebAPI.BusinessLogic.Repositories;
+using AkidoTrainingWebAPI.DataAccess.Models;
 using NuGet.Protocol.Core.Types;
 using System.Security.Principal;
 
@@ -25,10 +26,10 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
         // GET: api/Areas
         [HttpGet]
-        public async Task<ActionResult> GetAreas()
+        public async Task<ActionResult<IEnumerable<Areas>>> GetAreas()
         {
             var areas = await _repository.GetAreas();
-            return Ok(areas);
+            return areas;
         }
 
         // GET: api/Areas/5

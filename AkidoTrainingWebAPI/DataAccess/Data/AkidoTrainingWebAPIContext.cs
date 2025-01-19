@@ -35,7 +35,7 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
                 {
                     Id = 2,
                     Name = "User1",
-                    PhoneNumber = 11111,
+                    PhoneNumber = 22222,
                     Password = "Password123",
                     Role = "User",
                     Belt = "Black",
@@ -46,7 +46,7 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
                 {
                     Id = 3,
                     Name = "User2",
-                    PhoneNumber = 11111,
+                    PhoneNumber = 33333,
                     Password = "Password123",
                     Role = "User",
                     Belt = "Black",

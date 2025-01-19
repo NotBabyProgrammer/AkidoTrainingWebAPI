@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using AkidoTrainingWebAPI.DataAccess.Data;
 using AkidoTrainingWebAPI.BusinessLogic.Repositories;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AkidoTrainingWebAPIContext>(options =>
@@ -24,8 +26,19 @@ builder.Services.AddCors(options => {
     });
 });
 
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 104857600; // 100 MB in bytes
+});
+
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = 104857600; // 100 MB in bytes
+});
+
 builder.Services.AddScoped<AccountRepository>();
 builder.Services.AddScoped<AreasRepository>();
+builder.Services.AddScoped<DistrictsRepository>();
 
 var app = builder.Build();
 

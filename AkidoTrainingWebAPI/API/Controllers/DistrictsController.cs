@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using AkidoTrainingWebAPI.BusinessLogic.DTOs.DistrictsDTO;
 using AkidoTrainingWebAPI.BusinessLogic.Repositories;
 using AkidoTrainingWebAPI.BusinessLogic.DTOs.AccountsDTO;
+using AkidoTrainingWebAPI.DataAccess.Models;
 
 namespace AkidoTrainingWebAPI.API.Controllers
 {
@@ -24,10 +25,10 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
         // GET: api/Districts
         [HttpGet]
-        public async Task<ActionResult> GetDistricts()
+        public async Task<ActionResult<IEnumerable<Districts>>> GetDistricts()
         {
             var districts = await _repository.GetDistricts();
-            return Ok(districts);
+            return districts;
         }
 
         // GET: api/Districts/5
