@@ -5,12 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AkidoTrainingWebAPI.DataAccess.Data;
-using AkidoTrainingWebAPI.DataAccess.Models;
 using AkidoTrainingWebAPI.BusinessLogic.DTOs.AreasDTO;
 using AkidoTrainingWebAPI.BusinessLogic.Repositories;
 using NuGet.Protocol.Core.Types;
-using AkidoTrainingWebAPI.BusinessLogic.DTOs.AccountsDTO;
 using System.Security.Principal;
 
 namespace AkidoTrainingWebAPI.API.Controllers
@@ -19,41 +16,40 @@ namespace AkidoTrainingWebAPI.API.Controllers
     [ApiController]
     public class AreasController : ControllerBase
     {
-        private readonly AkidoTrainingWebAPIContext _context;
         private readonly AreasRepository _repository;
 
-        public AreasController(AkidoTrainingWebAPIContext context, AreasRepository repository)
+        public AreasController(AreasRepository repository)
         {
-            _context = context;
             _repository = repository;
         }
 
         // GET: api/Areas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Areas>>> GetAreas()
+        public async Task<ActionResult> GetAreas()
         {
-            return await _context.Areas.ToListAsync();
+            var areas = await _repository.GetAreas();
+            return Ok(areas);
         }
 
         // GET: api/Areas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Areas>> GetAreas(int id)
+        public async Task<ActionResult> GetAreas(int id)
         {
-            var areas = await _context.Areas.FindAsync(id);
+            var areas = await _repository.GetAreaByIdAsync(id);
 
             if (areas == null)
             {
                 return NotFound();
             }
 
-            return areas;
+            return Ok(areas);
         }
 
         // PUT: api/Areas/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAreas(int id, AreasDTOPut area)
         {
-            var areaToUpdate = await _context.Areas.FindAsync(id);
+            var areaToUpdate = await _repository.GetAreaByIdAsync(id);
             if (areaToUpdate == null)
             {
                 return BadRequest();
@@ -64,15 +60,13 @@ namespace AkidoTrainingWebAPI.API.Controllers
             areaToUpdate.Address = area.Address;
             areaToUpdate.District = area.District;
 
-            _context.Entry(areaToUpdate).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _repository.UpdateAreaAsync(areaToUpdate);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AreasExists(id))
+                if (!_repository.AreasExists(id))
                 {
                     return NotFound();
                 }
@@ -87,7 +81,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
         // POST: api/Areas
         [HttpPost]
-        public async Task<ActionResult<Areas>> PostAreas([FromForm] AreasDTOAdd areas, IFormFile image)
+        public async Task<ActionResult> PostAreas([FromForm] AreasDTOAdd areas, IFormFile image)
         {
             var newArea = new AreasDTO
             {
@@ -98,9 +92,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             };
 
             newArea.ImagePath = await WriteFile(image, areas.Name, areas.District);
-            //  await _repository.AddAccountsAsync(newAccount);
             await _repository.AddAreasAsync(newArea);
-            // return CreatedAtAction(nameof(GetAccounts), new { id = newAccount.Id}, newAccount);
             return CreatedAtAction("GetAreas", new { id = newArea.Id }, newArea);
         }
 
@@ -108,14 +100,13 @@ namespace AkidoTrainingWebAPI.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAreas(int id)
         {
-            var areas = await _context.Areas.FindAsync(id);
+            var areas = await _repository.GetAreaByIdAsync(id);
             if (areas == null)
             {
                 return NotFound();
             }
             DeleteAvatar(areas.ImagePath, areas.District);
-            _context.Areas.Remove(areas);
-            await _context.SaveChangesAsync();
+            await _repository.DeleteAreaAsync(areas);
 
             return NoContent();
         }
@@ -123,7 +114,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
         [HttpGet("Image/{id}")]
         public async Task<IActionResult> GetImage(int id)
         {
-            var area = await _context.Areas.FindAsync(id);
+            var area = await _repository.GetAreaByIdAsync(id);
 
             if (area == null || string.IsNullOrEmpty(area.ImagePath))
             {
@@ -156,7 +147,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
         [HttpPut("EditImages/{id}")]
         public async Task<IActionResult> EditAreaImage(int id, IFormFile avatar)
         {
-            var area = await _context.Areas.FindAsync(id);
+            var area = await _repository.GetAreaByIdAsync(id);
 
             if (area == null)
             {
@@ -165,8 +156,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             DeleteAvatar(area.ImagePath, area.District);
             area.ImagePath = await WriteFile(avatar, area.Name, area.District);
 
-            _context.Areas.Update(area);
-            await _context.SaveChangesAsync();
+            await _repository.UpdateAreaAsync(area);
 
             return Ok(area.ImagePath);
         }
@@ -213,11 +203,6 @@ namespace AkidoTrainingWebAPI.API.Controllers
             {
                 throw new Exception($"Error deleting avatar: {ex.Message}");
             }
-        }
-
-        private bool AreasExists(int id)
-        {
-            return _context.Areas.Any(e => e.Id == id);
         }
     }
 }
