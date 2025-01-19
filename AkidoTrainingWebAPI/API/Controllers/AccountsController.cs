@@ -56,7 +56,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
             if (await _repository.IsPhoneExistsAsync(accounts.PhoneNumber) && accountToUpdate.PhoneNumber != accounts.PhoneNumber)
             {
-                return Conflict("This email is already used for other accounts");
+                return Conflict("This phone number is already used for other accounts");
             }
 
             if (accounts.Role.ToString() == "Admin" || accounts.Role.ToString() == "User")
@@ -86,20 +86,12 @@ namespace AkidoTrainingWebAPI.API.Controllers
                 return NotFound();
             }
             var accountToDelete = await _repository.GetAccountsByIdAsync(id);
-            if (accountToDelete.Role != "Head Admin")
+            if (accountToDelete.ImagePath != "Default.png")
             {
-                if (accountToDelete.ImagePath != "Default.png")
-                {
-                    DeleteAvatar(accountToDelete.ImagePath);
-                }
-                await _repository.DeleteAccountAsync(id);
-                return NoContent();
+                DeleteAvatar(accountToDelete.ImagePath);
             }
-            else
-            {
-                return BadRequest("Head Admin can never be deleted");
-            }
-            
+            await _repository.DeleteAccountAsync(id);
+            return NoContent();
         }
 
         // POST: api/Accounts/login
@@ -121,7 +113,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
         {
             if (await _repository.IsPhoneExistsAsync(account.PhoneNumber))
             {
-                return Conflict("This email is already used for other accounts");
+                return Conflict("This phone number is already used for other accounts");
             }
             var newAccount = new AccountsDTO
             {
