@@ -102,7 +102,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
             if (existingPhoneNumber == null || existingPhoneNumber.Password != login.Password)
             {
-                return NotFound("Số điện thoại hoặc mậtt khẩu không hợp lệ.");
+                return NotFound("Số điện thoại hoặc mật khẩu không hợp lệ.");
             }
 
             return Ok(existingPhoneNumber.Role);
