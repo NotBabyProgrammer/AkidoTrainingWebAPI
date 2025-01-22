@@ -24,33 +24,33 @@ namespace AkidoTrainingWebAPI.DataAccess.Data
                 {
                     Id = 1,
                     Name = "Admin",
-                    PhoneNumber = 11111,
+                    PhoneNumber = "11111",
                     Password = "Password123",
                     Role = "Admin",
                     Belt = "Black",
-                    Level = 1,
+                    Level = 0,
                     ImagePath = "Default.png"
                 },
                 new Accounts
                 {
                     Id = 2,
                     Name = "User1",
-                    PhoneNumber = 22222,
+                    PhoneNumber = "22222",
                     Password = "Password123",
                     Role = "User",
                     Belt = "Black",
-                    Level = 2,
+                    Level = 0,
                     ImagePath = "Default.png"
                 },
                 new Accounts
                 {
                     Id = 3,
                     Name = "User2",
-                    PhoneNumber = 33333,
+                    PhoneNumber = "33333",
                     Password = "Password123",
                     Role = "User",
                     Belt = "Black",
-                    Level = 2,
+                    Level = 0,
                     ImagePath = "Default.png"
                 }
             );

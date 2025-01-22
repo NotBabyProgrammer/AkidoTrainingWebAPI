@@ -102,7 +102,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
 
             if (existingPhoneNumber == null || existingPhoneNumber.Password != login.Password)
             {
-                return NotFound("Invalid email or password.");
+                return NotFound("Số điện thoại hoặc mậtt khẩu không hợp lệ.");
             }
 
             return Ok(existingPhoneNumber.Role);
@@ -113,7 +113,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
         {
             if (await _repository.IsPhoneExistsAsync(account.PhoneNumber))
             {
-                return Conflict("This phone number is already used for other accounts");
+                return Conflict("Đã có tài khoản khác sử dụng số điện thoại này.");
             }
             var newAccount = new AccountsDTO
             {
@@ -181,7 +181,7 @@ namespace AkidoTrainingWebAPI.API.Controllers
             return Ok(accountToUpdate.ImagePath);
         }
 
-        private async Task<string> WriteFile(IFormFile image, int phone)
+        private async Task<string> WriteFile(IFormFile image, string? phone)
         {
             string filename = "";
             try

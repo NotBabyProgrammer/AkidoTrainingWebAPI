@@ -28,12 +28,12 @@ namespace AkidoTrainingWebAPI.BusinessLogic.Repositories
             return await _context.Accounts.FindAsync(id);
         }
 
-        public async Task<Accounts> GetAccountsByPhoneAsync(int phone)
+        public async Task<Accounts> GetAccountsByPhoneAsync(string? phone)
         {
             return await _context.Accounts.FirstOrDefaultAsync(a => a.PhoneNumber == phone);
         }
 
-        public async Task<bool> IsPhoneExistsAsync(int phone)
+        public async Task<bool> IsPhoneExistsAsync(string? phone)
         {
             return await _context.Accounts.AnyAsync(a => a.PhoneNumber == phone);
         }
